@@ -1,0 +1,74 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  .layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  /* Header */
+  .header {
+    background-color: #282c34;
+    padding: 15px;
+    text-align: center;
+    color: white;
+  }
+  
+  /* Main */
+  .main {
+    flex-grow: 1;
+    padding: 15px;
+    background-color: #f5f5f5;
+  }
+  
+  /* Footer */
+  .footer {
+    background-color: #282c34;
+    padding: 10px;
+    text-align: center;
+    color: white;
+  }
+  
+  /* Responsive Design */
+  
+  /* Petits écrans - Jusqu'à 768px */
+  @media (max-width: 768px) {
+    .header h1 {
+      font-size: 1.4rem;
+    }
+  
+    .main {
+      padding: 10px;
+    }
+  
+    .footer {
+      padding: 5px;
+    }
+  }
+  
+  /* Très petits écrans - Jusqu'à 480px */
+  @media (max-width: 480px) {
+    .header h1 {
+      font-size: 1.2rem;
+    }
+  
+    .main {
+      padding: 8px;
+    }
+  
+    .footer {
+      padding: 4px;
+    }
+  }
+  
+  /* Largeur minimum réduite à 200px */
+  @media (min-width: 200px) {
+    .main {
+      padding: 10px 20px;
+    }
+  }
+  

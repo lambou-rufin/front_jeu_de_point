@@ -1,10 +1,10 @@
 const routes = {
     HOME: '/home',
     LOGIN: '/login',
+    ROUND: '/round',
     FORGOTPASSWORD: '/login/forgotPassword',
     REGISTER: '/register',
     DASHBOARD: '/dashboard',
-    TUTORIAL: '/tutoriel',
     PROFILE: '/profile',
     SETTINGS: '/settings',
     LOGOUT: '/logout',

@@ -1,10 +1,11 @@
 import React, { FC } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import routes from './routes';
-import Layout from '../../app/layout/Layout';
-import HomePage from '../../app/layout/HomePage';
-import { Login } from '../../main/modules/users/Login';
-import { Register } from '../../main/modules/users/Register';
+import Layout from '../../main/app/layout/Layout';
+import HomePage from '../../main/app/layout/HomePage';
+import Login from '../../workspace/modules/users/Login';
+import Register from '../../workspace/modules/users/Register';
+import RoundComponent from '../../workspace/modules/round/RoundComponent';
 
 const Router: FC = () => {
   return (
@@ -17,11 +18,11 @@ const Router: FC = () => {
         {/* <Route path={routes.FORGOTPASSWORD} element={<ForgotPassword />} /> */}
 
         {/* Routes avec Layout */}
-        <Route element={<Layout children={undefined} />}>
-          {/* <Route path={routes.DASHBOARD} element={<Dashboard />} />
-          <Route path={routes.PROFILE} element={<Profile />} />
-          <Route path={routes.SETTINGS} element={<Settings />} />
-          <Route path={routes.LOGOUT} element={<Logout />} /> */}
+        <Route element={<Layout/>}>
+          <Route path={routes.ROUND} element={<RoundComponent />} />
+          {/* <Route path={routes.PROFILE} element={<Profile />} /> */}
+          {/* <Route path={routes.SETTINGS} element={<Settings />} /> */}
+          {/* <Route path={routes.LOGOUT} element={<Logout />} /> */}
         </Route>
 
         {/* Redirection par défaut */}

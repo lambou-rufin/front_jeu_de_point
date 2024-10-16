@@ -1,10 +1,10 @@
-// src/components/Header.tsx
+// src/components/Footer.tsx
 
 import React from 'react';
 
-const Header: React.FC = () => {
+const Footer: React.FC = () => {
   return (
-    <header className="header">
+    <footer className="footer">
       <nav>
         <ul>
           <li><a href="/">Home</a></li>
@@ -12,8 +12,8 @@ const Header: React.FC = () => {
           <li><a href="/contact">Contact</a></li>
         </ul>
       </nav>
-    </header>
+    </footer>
   );
 };
 
-export default Header;
+export default Footer;
