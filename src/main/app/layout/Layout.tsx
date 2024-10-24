@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import './Layout.css';
-import { LayoutProps } from '../../../interfaces/LayoutProps';
+import { LayoutProps } from '../../../interfaces/interface';
 import Header from './Header';
 import Footer from './Footer';
 

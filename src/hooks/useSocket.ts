@@ -1,16 +1,25 @@
-// src/hooks/useSocket.ts
-import { useEffect } from 'react';
-import socket from '../socket/socket';
-
+import { useEffect, useCallback } from 'react';
+import { getSocketInstance } from '../socket/socket';
 
 const useSocket = <T>(eventName: string, callback: (data: T) => void) => {
-  useEffect(() => {
-    socket.on(eventName, callback);
+  const memoizedCallback = useCallback(callback, [callback]);
 
+  useEffect(() => {
+    const socket = getSocketInstance();
+
+    if (!socket) {
+      console.error('Socket non initialisé'); // Afficher une erreur si le socket n'est pas encore initialisé
+      return;
+    }
+
+    // S'abonner à l'événement
+    socket.on(eventName, memoizedCallback);
+
+    // Se désabonner lors du démontage du composant
     return () => {
-      socket.off(eventName, callback);
+      socket.off(eventName, memoizedCallback);
     };
-  }, [eventName, callback]);
+  }, [eventName, memoizedCallback]);
 };
 
 export default useSocket;

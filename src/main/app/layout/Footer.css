@@ -1,0 +1,24 @@
+/* src/components/Footer.css */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.1);
+}
+
+.bottom-navigation {
+  display: flex;
+  justify-content: space-around;
+  height: 56px; /* Hauteur typique d'une barre de navigation sur mobile */
+  background-color: #f8f8f8;
+}
+
+.MuiBottomNavigationAction-root {
+  color: #616161; /* Couleur des icônes inactives */
+}
+
+.Mui-selected {
+  color: #1976d2 !important; /* Couleur des icônes actives (bleu typique d'Android) */
+}

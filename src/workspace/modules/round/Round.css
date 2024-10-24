@@ -1,0 +1,14 @@
+.round-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.round-card {
+  width: 300px;
+  margin-bottom: 20px;
+}
+
+.createRound {
+  margin-top: 50rem;
+}
