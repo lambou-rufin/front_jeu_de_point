@@ -1,14 +1,67 @@
 .round-list {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
   gap: 16px;
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: 15px;
 }
 
 .round-card {
-  width: 300px;
-  margin-bottom: 20px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 120px; /* Limit the card height */
+  overflow: hidden; /* Hide overflow content if necessary */
+  padding: 10px 16px; /* Adjust padding to reduce height */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.createRound {
-  margin-top: 50rem;
+.card-content-left,
+.card-content-right {
+  flex: 1;
+}
+
+.card-content-left {
+  text-align: left;
+}
+
+.card-content-right {
+  text-align: right;
+}
+
+button.createRound {
+  /* margin-top: 750px;
+  margin-bottom: 40px;
+  margin-left: 20px;
+  margin-right: 20px; // meme avec ci-jointe */
+  /* margin: 545px 20px 40px 20px; */
+  /* overflow:visible; */
+}
+
+/* Position the button fixed at the bottom center */
+button.createRound {
+  position: fixed;
+  bottom: 20px; /* Distance from the bottom */
+  left: 50%;
+  transform: translateX(-50%);
+   margin: 540px 20px 40px 20px; 
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 10; /* Ensure it stays above other content */
+}
+
+/* Ensure responsiveness */
+@media (max-width: 768px) {
+  .createRound{
+    /* width: 90%; */
+     /* Make button wider on small screens */
+    /* left: 5%; */
+    transform: none;
+  }
 }

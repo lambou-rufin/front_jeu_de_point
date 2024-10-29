@@ -5,34 +5,32 @@ import Layout from "../../main/app/layout/Layout";
 import Login from "../../workspace/modules/users/Login";
 import Register from "../../workspace/modules/users/Register";
 import RoundComponent from "../../workspace/modules/round/RoundComponent";
-import socket, { createInstanceSocket } from "../../socket/socket";
 import Setting from "../../workspace/modules/Setting/Setting";
 import Home from "../../workspace/modules/home/Home";
 import About from "../../workspace/modules/about/About";
+import WebSocketService from "../../shared/service/WebSocketService";
+import GameComponent from "../../workspace/modules/game/GameComponent";
 
 const Router: FC = () => {
   const currentUserId = 1; // Remplacez ceci par la logique pour récupérer l'ID de l'utilisateur connecté
 
-  /**
-   * LIFECYCLE
-   */
   // Initialiser le socket lors de l'ouverture du composant
   useEffect(() => {
-    if (!socket?.connected) {
-      createInstanceSocket();
-      if (!socket) return;
-      socket.connect();
-    } else {
-      socket.connect();
-    }
-  }, [socket]);
-
+    WebSocketService.createInstanceSocket('ws://localhost:3002'); // Créez une instance de socket en utilisant la méthode de la classe
+    WebSocketService.connect(); // Connectez le socket
+  
+    return () => {
+      WebSocketService.close(); // Déconnectez le socket lors du démontage du composant
+    };
+  }, []);
+  
   return (
     <BrowserRouter>
       <Routes>
         {/* Routes sans Layout */}
         <Route path={routes.LOGIN} element={<Login />} />
         <Route path={routes.REGISTER} element={<Register />} />
+        <Route path={routes.GAME} element={<GameComponent />} />
         {/* <Route path={routes.FORGOTPASSWORD} element={<ForgotPassword />} /> */}
 
         {/* Routes avec Layout */}

@@ -1,62 +1,67 @@
 import { useEffect, useState } from 'react';
-import { CreateRoundDto } from '../../../interfaces/interface';
-import useSocket from '../../../hooks/useSocket';
-import socket, { createInstanceSocket } from '../../../socket/socket'; // socket est maintenant un export par défaut
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Typography, Card, CardContent } from '@mui/material';
 import './Round.css';
+import { CreateRoundDto } from '../../../shared/models/interface';
+import RoundService from '../../../shared/service/RoundService';
 
+const roundService = new RoundService();
 
 const RoundComponent: React.FC<{ currentUserId: number }> = ({ currentUserId }) => {
   const [rounds, setRounds] = useState<CreateRoundDto[]>([]);
   const [newRound, setNewRound] = useState<CreateRoundDto>({
     id_rond: 0,
-    matrix_size: 3,
+    matrix_size: 30,
     max_score: 15,
     reflexion_time: 20,
-    duration_time: 20,
+    duration_time: 25,
     playerIds: [],
-    mise: 1000,
+    mise: 10000,
     creatorId: currentUserId,
-    createdAt: new Date(), // Utiliser la date actuelle
-    winnerId: null // Ajouter winnerId ici, peut être initialisé à null
+    createdAt: new Date(),
+    winnerId: null
   });
-  
+
   const [createdRound, setCreatedRound] = useState<CreateRoundDto | null>(null);
   const [open, setOpen] = useState(false);
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
-    // Initialiser le socket
-    useEffect(() => {
-      createInstanceSocket();
-    }, []);  
-
-  // Écoute l'événement "roundCreated" via WebSocket
-  useSocket<CreateRoundDto>('roundCreated', (round: CreateRoundDto) => {
-    setRounds((prevRounds) => [...prevRounds, round]);
-    setCreatedRound(round);
-    setConfirmationModalOpen(true);
-    setIsCreating(false);
-  });
+  useEffect(() => {
+    const fetchRounds = async () => {
+      try {
+        const roundsData = await roundService.getRounds();
+        setRounds(roundsData);
+      } catch (error) {
+        console.error("Erreur lors du chargement des parties:", error);
+      }
+    };
+    fetchRounds();
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewRound((prev) => ({ ...prev, [name]: Number(value) }));
   };
 
-  const createRound = () => {
-    if(!socket)return;
-    
+  const createRound = async () => {
     if (!isCreating) {
-      // setIsCreating(true);
-      socket.emit('createRound', newRound);
-      setOpen(false);
+      setIsCreating(true);
+      try {
+        const createdRound = await roundService.createRound(newRound);
+        setRounds((prevRounds) => [...prevRounds, createdRound]);
+        setCreatedRound(createdRound);
+        setConfirmationModalOpen(true);
+        setOpen(false);
+      } catch (error) {
+        console.error(error);
+        alert((error as Error).message || 'Échec de la création d’une nouvelle partie');
+      } finally {
+        setIsCreating(false);
+      }
     }
   };
 
   const confirmRound = (roundId: number, playerId: number) => {
-    if(!socket)return;
-    socket.emit('confirmPlayer', { roundId, playerId });
     setConfirmationModalOpen(false);
   };
 
@@ -71,7 +76,7 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({ currentUserId }) 
               <Typography variant="body1">Taille de la grille: {round.matrix_size}</Typography>
               <Typography variant="body1">Score maximum: {round.max_score}</Typography>
               <Typography variant="body1">Temps de réflexion: {round.reflexion_time} secondes</Typography>
-              <Typography variant="body1">Durée limite: {round.duration_time} secondes</Typography>
+              <Typography variant="body1">Durée limite: {round.duration_time} minutes</Typography>
               <Typography variant="body1">Mise: {round.mise}</Typography>
               <Typography variant="body1">Créateur: Joueur {round.creatorId}</Typography>
             </CardContent>
@@ -112,7 +117,7 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({ currentUserId }) 
           />
           <TextField
             margin="dense"
-            label="Durée limite (en min)"
+            label="Durée limite (en minutes)"
             type="number"
             name="duration_time"
             value={newRound.duration_time}
@@ -133,13 +138,13 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({ currentUserId }) 
           <Button onClick={() => setOpen(false)} color="primary">
             Annuler
           </Button>
-          <Button onClick={createRound} color="primary" disabled={isCreating}>
-            {isCreating ? 'Création en cours...' : 'Créer'}
+          <Button onClick={createRound} color="primary">
+            Créer
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Button className="createRound" variant="contained" onClick={() => setOpen(true)} disabled={isCreating}>
+      <Button className="createRound" variant="contained" onClick={() => setOpen(true)}>
         Créer une partie
       </Button>
 
@@ -150,13 +155,13 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({ currentUserId }) 
             <Typography variant="body1">Taille de la grille: {createdRound.matrix_size}</Typography>
             <Typography variant="body1">Score maximum: {createdRound.max_score}</Typography>
             <Typography variant="body1">Temps de réflexion: {createdRound.reflexion_time} secondes</Typography>
-            <Typography variant="body1">Durée limite: {createdRound.duration_time} min</Typography>
+            <Typography variant="body1">Durée limite: {createdRound.duration_time} minutes</Typography>
             <Typography variant="body1">Mise: {createdRound.mise}</Typography>
             <Typography variant="body1">Créateur: Joueur {createdRound.creatorId}</Typography>
           </DialogContent>
           <DialogActions>
             <Button
-              onClick={() => confirmRound(createdRound.id_rond, 2)} // Utilisez le bon ID pour le joueur
+              onClick={() => confirmRound(createdRound.id_rond, currentUserId)}
               color="primary"
             >
               Confirmer et rejoindre

@@ -22,3 +22,23 @@ export interface Round {
   id: number;
   // Ajoutez d'autres propriétés selon votre DTO
 }
+
+// Définir les types pour les données
+export interface SignUpData {
+  pseudo: string;
+  username: string;
+  email: string;
+  password: string;
+  phoneNumber: string;
+  solde?: number; // Valeur par défaut si non spécifiée
+}
+
+// types.ts or types.tsx
+export interface SignInData {
+  phoneNumber: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+}

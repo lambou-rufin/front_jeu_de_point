@@ -1,9 +1,109 @@
-import React from 'react'
+import React, { useState } from "react";
+import { TextField, Button, Typography, Container, Box } from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+import routes from "../../../route/public/routes";
+import { SignUpData } from "../../../shared/models/interface";
+import AuthService from "../../../shared/service/AuthService";
 
- const Register: React.FC = () => {
+const Register: React.FC = () => {
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [pseudo, setPseudo] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    const signUpData: SignUpData = {
+      phoneNumber,
+      password,
+      pseudo,
+      username,
+      email,
+    };
+
+    try {
+      await AuthService.signUp(signUpData);
+      // Redirect or update the state as necessary
+      navigate('/login'); // Redirection vers login
+    } catch (error) {
+      setError((error as Error).message);
+    }
+  };
+
   return (
-    <div>Register</div>
-  )
-}
+    <Container component="main" maxWidth="xs">
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="50vh" // Center vertically in full height
+        marginTop="15rem"
+        bgcolor="#ffffff" // Optional: Light background color
+        padding={2} // Optional: Padding around the container
+        borderRadius={2} // Optional: Rounded corners
+        boxShadow={3} // Optional: Shadow effect
+      >
+        <Typography variant="h5">Créer votre compte</Typography>
+        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+          <TextField
+            label="Pseudo"
+            fullWidth
+            margin="normal"
+            value={pseudo}
+            onChange={(e) => setPseudo(e.target.value)}
+            required
+          />
+          <TextField
+            label="Username"
+            fullWidth
+            margin="normal"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <TextField
+            label="Phone Number"
+            fullWidth
+            margin="normal"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            required
+          />
+          <TextField
+            label="Email"
+            type="email"
+            fullWidth
+            margin="normal"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <TextField
+            label="Password"
+            type="password"
+            fullWidth
+            margin="normal"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          {error && <Typography color="error">{error}</Typography>}
+          <Button type="submit" fullWidth variant="contained" color="primary">
+            Register
+          </Button>
+          <p>
+            <Link to={routes.LOGIN}>Se connecter</Link>
+          </p>
+        </form>
+      </Box>
+    </Container>
+  );
+};
 
-export default Register
+export default Register;

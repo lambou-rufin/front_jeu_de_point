@@ -20,8 +20,8 @@ const Footer: React.FC = () => {
         className="bottom-navigation"
       >
         <BottomNavigationAction label="Home" icon={<HomeIcon />} href="/home" />
-        <BottomNavigationAction label="About" icon={<InfoIcon />} href="/about" />
-        <BottomNavigationAction label="Settings" icon={<ContactMailIcon />} href="/settings" />
+        <BottomNavigationAction label="A propos" icon={<InfoIcon />} href="/about" />
+        <BottomNavigationAction label="Paramètre" icon={<ContactMailIcon />} href="/settings" />
       </BottomNavigation>
     </footer>
   );
