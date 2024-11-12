@@ -4,10 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import routes from "../../../route/public/routes";
 import { SignUpData } from "../../../shared/models/interface";
 import AuthService from "../../../shared/service/AuthService";
+import './Register.css';
 
 const Register: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [pseudo, setPseudo] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -22,8 +24,6 @@ const Register: React.FC = () => {
       phoneNumber,
       password,
       pseudo,
-      username,
-      email,
     };
 
     try {
@@ -60,28 +60,11 @@ const Register: React.FC = () => {
             required
           />
           <TextField
-            label="Username"
-            fullWidth
-            margin="normal"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-          <TextField
             label="Phone Number"
             fullWidth
             margin="normal"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
-            required
-          />
-          <TextField
-            label="Email"
-            type="email"
-            fullWidth
-            margin="normal"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             required
           />
           <TextField
@@ -93,8 +76,17 @@ const Register: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+           <TextField
+            label="Confirm password"
+            type="password"
+            fullWidth
+            margin="normal"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
           {error && <Typography color="error">{error}</Typography>}
-          <Button type="submit" fullWidth variant="contained" color="primary">
+          <Button type="submit" className="registerButton" fullWidth variant="contained" color="primary">
             Register
           </Button>
           <p>

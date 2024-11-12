@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-const WebSocketComponent = () => {
+const WebSocketComponent: React.FC = () => {
   useEffect(() => {
     const socket = new WebSocket('ws://localhost:3002/socket.io/?EIO=4&transport=websocket');
 

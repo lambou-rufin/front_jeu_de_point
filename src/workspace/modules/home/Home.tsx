@@ -5,7 +5,7 @@ const Home: React.FC = () => {
   return (
     <>
       <div>
-      <RoundComponent currentUserId={0} />
+        <h1>Home</h1>
       </div>
     </>
   );

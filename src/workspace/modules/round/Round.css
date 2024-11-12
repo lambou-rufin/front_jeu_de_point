@@ -2,25 +2,32 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  max-height: 100vh;
-  overflow-y: auto;
+  gap: 7px;
+  /* max-height: 100vh; */
+  /* overflow:scroll;  */
   padding: 15px;
+  /* background-color: #c6c8c1; */
+  max-width: 700px;
+  margin: auto;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .round-card {
   width: 100%;
   max-width: 800px;
-  max-height: 120px; /* Limit the card height */
-  overflow: hidden; /* Hide overflow content if necessary */
-  padding: 10px 16px; /* Adjust padding to reduce height */
+  /* max-height: 120px;  */
+  overflow: hidden;
+  padding: 10px 16px; 
+  /* background-color: #c6c8c1; */
   display: flex;
+  border-radius: 20px;
   flex-direction: row;
   justify-content: space-between;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 8px 8px 8px 8px rgba(0.1, 0.1, 0.1, 0.1);
 }
 
-.card-content-left,
+/* .card-content-left,
 .card-content-right {
   flex: 1;
 }
@@ -31,15 +38,42 @@
 
 .card-content-right {
   text-align: right;
+} */
+
+.card-style{
+  width: 100%;
+  max-width: 800px;
+  /* max-height: 120px;  */
+  overflow: hidden;
+  padding: 10px 16px; 
+  /* background-color: #e6ebea; */
+  background-color: #111827;
+  display: flex;
+  border-radius: 5px;
+  flex-direction: row;
+  justify-content: space-between;
+  color: white;
+  font-size: 1rem;
 }
 
-button.createRound {
+.partieId{
+/* color:  #1976d2; */
+color:red;
+font-size: 12px;
+}
+
+/* button.createRound { */
   /* margin-top: 750px;
   margin-bottom: 40px;
   margin-left: 20px;
   margin-right: 20px; // meme avec ci-jointe */
   /* margin: 545px 20px 40px 20px; */
   /* overflow:visible; */
+/* } */
+
+.container{
+  justify-content: center;
+  align-items: center;
 }
 
 /* Position the button fixed at the bottom center */
@@ -48,7 +82,8 @@ button.createRound {
   bottom: 20px; /* Distance from the bottom */
   left: 50%;
   transform: translateX(-50%);
-   margin: 540px 20px 40px 20px; 
+  /* margin: 540px 20px 30px 20px;  */
+  margin-bottom: 70px;
   color: white;
   border: none;
   border-radius: 5px;
@@ -64,4 +99,12 @@ button.createRound {
     /* left: 5%; */
     transform: none;
   }
+}
+
+@media (min-width: 200px) {
+  .round-list,
+  .round-card, 
+  .card-style{
+    padding: 5px 10px; 
+   }
 }

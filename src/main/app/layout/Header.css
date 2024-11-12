@@ -1,5 +1,75 @@
-.header, h1{
-    justify-content: start;
+/* .header, h1{
+    justify-content: space-between;
     align-items: start;
     font-size: 1.2rem;
+} */
+
+.gamepad{
+    color: red;
 }
+
+.toggle_button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    color: white;
+    font-size: 18px;
+  }
+  .liste{
+    font-size: 1.3rem;
+  }
+  
+  .dropdown_menu {
+    position: absolute;
+    color: #000000;
+    top: 60px;
+    right: 20px;
+    background-color: white;
+    padding: 10px;
+    display: none;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgb(109, 112, 145);
+    /* width: 150px; */
+    height: auto;
+  }
+  
+  .dropdown_menu.open {
+    display: block;
+  }
+  .menu{
+    color: #000000;
+  }
+
+  .uldrop {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .uldrop li {
+    padding: 5px 10px;
+  }
+  
+  .uldrop li a {
+    text-decoration: none;
+    color: #333;
+        display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  
+  .uldrop li a:hover {
+    color: #d4e238;
+  }
+
+  .headerli{
+   display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style-type: none;
+  }

@@ -1,22 +1,22 @@
 // src/interfaces/CreateRoundDto.ts
 export interface CreateRoundDto {
   id_rond: number;
-  matrix_size?: number; 
-  max_score: number; 
+  matrix_size?: number;
+  max_score: number;
   reflexion_time: number;
   duration_time: number;
-    isConfirmed?: boolean; 
-    playerIds: number[];
-    mise: number;
-    creatorId: number; 
-    isGameOver?: boolean; 
-    winnerId: number | null; // Autoriser null pour winnerId
-    createdAt: Date | number; // Permettre soit une Date, soit un nombre
-  }
-  
-  export interface LayoutProps {
-    children?: React.ReactNode; // `children` est maintenant optionnel
-  }
+  isConfirmed?: boolean;
+  playerIds: number[];
+  mise: number;
+  creatorId: number;
+  isGameOver?: boolean;
+  winnerId: number | null; // Autoriser null pour winnerId
+  createdAt: Date | number; // Permettre soit une Date, soit un nombre
+}
+
+export interface LayoutProps {
+  children?: React.ReactNode; // `children` est maintenant optionnel
+}
 
 export interface Round {
   id: number;
@@ -26,8 +26,8 @@ export interface Round {
 // Définir les types pour les données
 export interface SignUpData {
   pseudo: string;
-  username: string;
-  email: string;
+  // username: string;
+  // email: string;
   password: string;
   phoneNumber: string;
   solde?: number; // Valeur par défaut si non spécifiée
@@ -41,4 +41,16 @@ export interface SignInData {
 
 export interface AuthResponse {
   accessToken: string;
+}
+
+export interface ConfirmeRoundProps {
+  open: boolean;
+  onClose: () => void;
+  round: CreateRoundDto | null;
+  currentUserId: number;
+}
+
+export interface ConfirmPlayerResponse {
+  message: string;
+  round: any; // Remplacez `any` par le type approprié de votre round
 }

@@ -3,6 +3,7 @@ import { TextField, Button, Typography, Container, Box } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import routes from '../../../route/public/routes';
 import AuthService from '../../../shared/service/AuthService';
+import './Login.css';
 
 const Login: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState<string>('');
@@ -57,12 +58,12 @@ const Login: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-         <p><Link to={routes.FORGOTPASSWORD}>Forgot Password?</Link></p>
+         <p className='forgotPass'><Link to={routes.FORGOTPASSWORD}>Forgot Password?</Link></p>
           {error && <Typography color="error">{error}</Typography>}
           <Button type="submit" fullWidth variant="contained" color="primary">
             Login
           </Button>
-          <p><Link to={routes.REGISTER}>Créer compte</Link></p>
+          <p className='creeCompte'><Link to={routes.REGISTER}>Créer compte</Link></p>
         </form>
       </Box>
     </Container>

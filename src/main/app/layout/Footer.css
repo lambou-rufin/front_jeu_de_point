@@ -1,4 +1,3 @@
-/* src/components/Footer.css */
 .footer {
   position: fixed;
   bottom: 0;
@@ -16,9 +15,13 @@
 }
 
 .MuiBottomNavigationAction-root {
-  color: #616161; /* Couleur des icônes inactives */
+  color: #1976d2; /* Couleur des icônes inactives */
 }
 
 .Mui-selected {
   color: #1976d2 !important; /* Couleur des icônes actives (bleu typique d'Android) */
 }
+/* 
+.quitter {
+  color: red;
+} */

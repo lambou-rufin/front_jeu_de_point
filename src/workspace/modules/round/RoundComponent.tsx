@@ -1,12 +1,26 @@
-import { useEffect, useState } from 'react';
-import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Typography, Card, CardContent } from '@mui/material';
-import './Round.css';
-import { CreateRoundDto } from '../../../shared/models/interface';
-import RoundService from '../../../shared/service/RoundService';
+import { useEffect, useState } from "react";
+import {
+  Button,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography,
+  Card,
+  CardContent,
+} from "@mui/material";
+import "./Round.css";
+import { CreateRoundDto } from "../../../shared/models/interface";
+import RoundService from "../../../shared/service/RoundService";
+import ConfirmeRound from "../confirmeRound/confirmeRound";
+import WebSocketService from "../../../shared/service/WebSocketService";
 
 const roundService = new RoundService();
 
-const RoundComponent: React.FC<{ currentUserId: number }> = ({ currentUserId }) => {
+const RoundComponent: React.FC<{ currentUserId: number }> = ({
+  currentUserId,
+}) => {
   const [rounds, setRounds] = useState<CreateRoundDto[]>([]);
   const [newRound, setNewRound] = useState<CreateRoundDto>({
     id_rond: 0,
@@ -18,25 +32,35 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({ currentUserId }) 
     mise: 10000,
     creatorId: currentUserId,
     createdAt: new Date(),
-    winnerId: null
+    winnerId: null,
   });
 
-  const [createdRound, setCreatedRound] = useState<CreateRoundDto | null>(null);
   const [open, setOpen] = useState(false);
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
+  const [selectedRound, setSelectedRound] = useState<CreateRoundDto | null>(
+    null
+  );
   const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
-    const fetchRounds = async () => {
-      try {
-        const roundsData = await roundService.getRounds();
-        setRounds(roundsData);
-      } catch (error) {
-        console.error("Erreur lors du chargement des parties:", error);
-      }
+    WebSocketService.createInstanceSocket('ws://localhost:3002'); // Créez et connectez une instance de socket
+  
+    return () => {
+      WebSocketService.close(); // Fermez la connexion lors du démontage du composant
     };
-    fetchRounds();
   }, []);
+  
+  // useEffect(() => {
+  //   const fetchRounds = async () => {
+  //     try {
+  //       const roundsData = await roundService.getRounds();
+  //       setRounds(roundsData);
+  //     } catch (error) {
+  //       console.error("Erreur lors du chargement des parties:", error);
+  //     }
+  //   };
+  //   fetchRounds();
+  // }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -49,41 +73,57 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({ currentUserId }) 
       try {
         const createdRound = await roundService.createRound(newRound);
         setRounds((prevRounds) => [...prevRounds, createdRound]);
-        setCreatedRound(createdRound);
-        setConfirmationModalOpen(true);
         setOpen(false);
       } catch (error) {
         console.error(error);
-        alert((error as Error).message || 'Échec de la création d’une nouvelle partie');
+        alert(
+          (error as Error).message ||
+            "Échec de la création d’une nouvelle partie"
+        );
       } finally {
         setIsCreating(false);
       }
     }
   };
 
-  const confirmRound = (roundId: number, playerId: number) => {
-    setConfirmationModalOpen(false);
+  const openConfirmationDialog = (round: CreateRoundDto) => {
+    setSelectedRound(round);
+    setConfirmationModalOpen(true);
   };
-
   return (
-    <div>
-      <h1>Liste des parties</h1>
+    <div className="container">
+      <h1 className="liste">Liste des parties</h1>
       <div className="round-list">
         {rounds.map((round) => (
-          <Card key={round.id_rond} className="round-card">
-            <CardContent>
-              <Typography variant="h6">Partie {round.id_rond}</Typography>
-              <Typography variant="body1">Taille de la grille: {round.matrix_size}</Typography>
-              <Typography variant="body1">Score maximum: {round.max_score}</Typography>
-              <Typography variant="body1">Temps de réflexion: {round.reflexion_time} secondes</Typography>
-              <Typography variant="body1">Durée limite: {round.duration_time} minutes</Typography>
+          <Card
+            key={round.id_rond}
+            className="round-card clickable-card"
+            onClick={() => openConfirmationDialog(round)}
+          >
+            <CardContent className="card-style">
+              <Typography className="partieId" variant="h6">
+                Partie {round.id_rond}
+              </Typography>
+              <Typography variant="body1">
+                Taille de la grille: {round.matrix_size}
+              </Typography>
+              <Typography variant="body1">
+                Score maximum: {round.max_score}
+              </Typography>
+              <Typography variant="body1">
+                Temps de réflexion: {round.reflexion_time} secondes
+              </Typography>
+              <Typography variant="body1">
+                Durée limite: {round.duration_time} minutes
+              </Typography>
               <Typography variant="body1">Mise: {round.mise}</Typography>
-              <Typography variant="body1">Créateur: Joueur {round.creatorId}</Typography>
+              <Typography variant="body1">
+                Créateur: Joueur {round.creatorId}
+              </Typography>
             </CardContent>
           </Card>
         ))}
       </div>
-
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Créer une nouvelle partie</DialogTitle>
         <DialogContent>
@@ -143,35 +183,19 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({ currentUserId }) 
           </Button>
         </DialogActions>
       </Dialog>
-
-      <Button className="createRound" variant="contained" onClick={() => setOpen(true)}>
+      <Button
+        className="createRound"
+        variant="contained"
+        onClick={() => setOpen(true)}
+      >
         Créer une partie
       </Button>
-
-      {createdRound && (
-        <Dialog open={confirmationModalOpen} onClose={() => setConfirmationModalOpen(false)}>
-          <DialogTitle>Détails de la nouvelle partie</DialogTitle>
-          <DialogContent>
-            <Typography variant="body1">Taille de la grille: {createdRound.matrix_size}</Typography>
-            <Typography variant="body1">Score maximum: {createdRound.max_score}</Typography>
-            <Typography variant="body1">Temps de réflexion: {createdRound.reflexion_time} secondes</Typography>
-            <Typography variant="body1">Durée limite: {createdRound.duration_time} minutes</Typography>
-            <Typography variant="body1">Mise: {createdRound.mise}</Typography>
-            <Typography variant="body1">Créateur: Joueur {createdRound.creatorId}</Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => confirmRound(createdRound.id_rond, currentUserId)}
-              color="primary"
-            >
-              Confirmer et rejoindre
-            </Button>
-            <Button onClick={() => setConfirmationModalOpen(false)} color="secondary">
-              Fermer
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
+      <ConfirmeRound
+        open={confirmationModalOpen}
+        onClose={() => setConfirmationModalOpen(false)}
+        round={selectedRound}
+        currentUserId={currentUserId}
+      />
     </div>
   );
 };

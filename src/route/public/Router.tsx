@@ -10,20 +10,22 @@ import Home from "../../workspace/modules/home/Home";
 import About from "../../workspace/modules/about/About";
 import WebSocketService from "../../shared/service/WebSocketService";
 import GameComponent from "../../workspace/modules/game/GameComponent";
+import Historique from "../../workspace/modules/Historique/Historique";
+import Replay from "../../workspace/modules/Replay/Replay";
 
 const Router: FC = () => {
   const currentUserId = 1; // Remplacez ceci par la logique pour récupérer l'ID de l'utilisateur connecté
 
   // Initialiser le socket lors de l'ouverture du composant
   useEffect(() => {
-    WebSocketService.createInstanceSocket('ws://localhost:3002'); // Créez une instance de socket en utilisant la méthode de la classe
+    WebSocketService.createInstanceSocket("ws://localhost:3002"); // Créez une instance de socket en utilisant la méthode de la classe
     WebSocketService.connect(); // Connectez le socket
-  
+
     return () => {
       WebSocketService.close(); // Déconnectez le socket lors du démontage du composant
     };
   }, []);
-  
+
   return (
     <BrowserRouter>
       <Routes>
@@ -40,7 +42,9 @@ const Router: FC = () => {
             path={routes.ROUND}
             element={<RoundComponent currentUserId={currentUserId} />}
           />
-          <Route path={routes.SETTINGS} element={<Setting />} />
+           <Route path={routes.SETTINGS} element={<Setting />} />
+          <Route path={routes.HISTORIQUE} element={<Historique />} />
+          <Route path={routes.REPLAY} element={<Replay />} />
           <Route path={routes.ABOUT} element={<About />} />
           {/* <Route path={routes.LOGOUT} element={<Logout />} /> */}
         </Route>
