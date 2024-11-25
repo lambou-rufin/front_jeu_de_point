@@ -1,58 +1,51 @@
-import { io } from "socket.io-client";
+// WebSocketService.ts
+import { io, Socket } from 'socket.io-client';
 
 class WebSocketService {
-  private static socket: any;
+  private static socket: Socket | null = null;
 
-  static createInstanceSocket(url: string) {
-    // Utilisez le client Socket.IO pour se connecter
+  static createInstanceSocket(url: string, token: string = '') {
+    // console.log(token);
+    
     this.socket = io(url, {
-      transports: ["websocket"],
+      transportOptions:{
+        polling:{
+          extraHeaders: {
+            authorization: `Bearer ${token}`,
+          },
+        }
+      }
     });
 
-    this.socket.on("connect", () => {
-      console.log("Connecté au serveur Socket.IO");
+    this.socket.on('connect', () => {
+      console.log('Connected to the Socket.IO server');
     });
 
-    this.socket.on("disconnect", () => {
-      console.log("Connexion Socket.IO fermée. Tentative de reconnexion...");
+    this.socket.on('connect_error', (error) => {
+      console.error('Socket.IO connection error:', error);
     });
 
-    this.socket.on("connect_error", (error: any) => {
-      console.error("Erreur de connexion Socket.IO :", error);
+    this.socket.on('disconnect', () => {
+      console.log('Disconnected. Reconnecting...');
     });
+
+    return this.socket;
   }
 
-  static connect() {
-    if (!this.socket) {
-      console.warn(
-        "Socket non initialisé. Veuillez appeler createInstanceSocket d'abord."
-      );
-      return;
-    }
-    this.socket.connect(); // Établissez la connexion WebSocket
+  static getSocket(): Socket | null {
+    return this.socket;
   }
 
-  static close() {
+  static closeSocket() {
+    this.socket?.disconnect();
+    this.socket = null;
+  }
+
+  static sendMessage(event: string, message: any) {
     if (this.socket) {
-      this.socket.disconnect(); // Déconnectez le socket
-      console.log("Socket déconnecté.");
-    }
-  }
-
-  static sendMessage(event: string, data: any) {
-    if (this.socket && this.socket.connected) {
-      this.socket.emit(event, data);
+      this.socket.emit(event, message);
     } else {
-      console.warn("Socket.IO non connecté. Message non envoyé :", {
-        event,
-        data,
-      });
-    }
-  }
-
-  static onMessage(callback: (data: any) => void) {
-    if (this.socket) {
-      this.socket.on("message", callback); // Écoutez les messages
+      console.error('Socket is not initialized');
     }
   }
 }

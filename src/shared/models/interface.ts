@@ -29,6 +29,7 @@ export interface SignUpData {
   // username: string;
   // email: string;
   password: string;
+  confirmPassword: string; // Nouveau champ pour la confirmation du mot de passe
   phoneNumber: string;
   solde?: number; // Valeur par défaut si non spécifiée
 }
@@ -44,9 +45,9 @@ export interface AuthResponse {
 }
 
 export interface ConfirmeRoundProps {
+  round: CreateRoundDto | null;  // This should be `round` as per the error
   open: boolean;
   onClose: () => void;
-  round: CreateRoundDto | null;
   currentUserId: number;
 }
 

@@ -12,11 +12,9 @@ import {
 } from "@mui/material";
 import "./Round.css";
 import { CreateRoundDto } from "../../../shared/models/interface";
-import RoundService from "../../../shared/service/RoundService";
 import ConfirmeRound from "../confirmeRound/confirmeRound";
 import WebSocketService from "../../../shared/service/WebSocketService";
-
-const roundService = new RoundService();
+import RoundService from "../../../shared/service/RoundService";
 
 const RoundComponent: React.FC<{ currentUserId: number }> = ({
   currentUserId,
@@ -34,7 +32,6 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({
     createdAt: new Date(),
     winnerId: null,
   });
-
   const [open, setOpen] = useState(false);
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const [selectedRound, setSelectedRound] = useState<CreateRoundDto | null>(
@@ -43,24 +40,36 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({
   const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
-    WebSocketService.createInstanceSocket('ws://localhost:3002'); // Créez et connectez une instance de socket
-  
+    const token = localStorage.getItem('accessToken');
+    ; // Remplacez par le token réel
+    WebSocketService.createInstanceSocket("http://localhost:3002", token||'');
+
+    // Fetch existing rounds
+    const fetchRounds = async () => {
+      try {
+        const roundsData = await RoundService.getRounds();
+        setRounds(roundsData);
+      } catch (error) {
+        console.error("Erreur lors du chargement des parties:", error);
+      }
+    };
+
+    fetchRounds();
+
+    WebSocketService.getSocket()?.on(
+      "roundCreated",
+      (round: CreateRoundDto) => {
+        console.log("Round reçu via WebSocket:", round);
+        setRounds((prevRounds) =>
+          Array.isArray(prevRounds) ? [...prevRounds, round] : [round]
+        );
+      }
+    );
+
     return () => {
-      WebSocketService.close(); // Fermez la connexion lors du démontage du composant
+      WebSocketService.closeSocket();
     };
   }, []);
-  
-  // useEffect(() => {
-  //   const fetchRounds = async () => {
-  //     try {
-  //       const roundsData = await roundService.getRounds();
-  //       setRounds(roundsData);
-  //     } catch (error) {
-  //       console.error("Erreur lors du chargement des parties:", error);
-  //     }
-  //   };
-  //   fetchRounds();
-  // }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -71,15 +80,14 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({
     if (!isCreating) {
       setIsCreating(true);
       try {
-        const createdRound = await roundService.createRound(newRound);
-        setRounds((prevRounds) => [...prevRounds, createdRound]);
-        setOpen(false);
+        const createdRound = await RoundService.createRound(newRound);
+        if (createdRound) {
+          setRounds((prevRounds) => [...prevRounds, createdRound]);
+          setOpen(false);
+        }
       } catch (error) {
-        console.error(error);
-        alert(
-          (error as Error).message ||
-            "Échec de la création d’une nouvelle partie"
-        );
+        console.error("Erreur lors de la création de la partie:", error);
+        alert("Échec de la création d’une nouvelle partie");
       } finally {
         setIsCreating(false);
       }
@@ -90,40 +98,48 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({
     setSelectedRound(round);
     setConfirmationModalOpen(true);
   };
+
   return (
     <div className="container">
       <h1 className="liste">Liste des parties</h1>
       <div className="round-list">
-        {rounds.map((round) => (
-          <Card
-            key={round.id_rond}
-            className="round-card clickable-card"
-            onClick={() => openConfirmationDialog(round)}
-          >
-            <CardContent className="card-style">
-              <Typography className="partieId" variant="h6">
-                Partie {round.id_rond}
-              </Typography>
-              <Typography variant="body1">
-                Taille de la grille: {round.matrix_size}
-              </Typography>
-              <Typography variant="body1">
-                Score maximum: {round.max_score}
-              </Typography>
-              <Typography variant="body1">
-                Temps de réflexion: {round.reflexion_time} secondes
-              </Typography>
-              <Typography variant="body1">
-                Durée limite: {round.duration_time} minutes
-              </Typography>
-              <Typography variant="body1">Mise: {round.mise}</Typography>
-              <Typography variant="body1">
-                Créateur: Joueur {round.creatorId}
-              </Typography>
-            </CardContent>
-          </Card>
-        ))}
+        {rounds && rounds.length > 0 ? (
+          rounds.map((round) =>
+            round ? (
+              <Card
+                key={round.id_rond}
+                className="round-card clickable-card"
+                onClick={() => openConfirmationDialog(round)}
+              >
+                <CardContent className="card-style">
+                  <Typography className="partieId" variant="h6">
+                    Partie {round.id_rond}
+                  </Typography>
+                  <Typography variant="body1">
+                    Taille de la grille: {round.matrix_size}
+                  </Typography>
+                  <Typography variant="body1">
+                    Score maximum: {round.max_score}
+                  </Typography>
+                  <Typography variant="body1">
+                    Temps de réflexion: {round.reflexion_time} secondes
+                  </Typography>
+                  <Typography variant="body1">
+                    Durée limite: {round.duration_time} minutes
+                  </Typography>
+                  <Typography variant="body1">Mise: {round.mise}</Typography>
+                  <Typography variant="body1">
+                    Créateur: Joueur {round.creatorId}
+                  </Typography>
+                </CardContent>
+              </Card>
+            ) : null
+          )
+        ) : (
+          <Typography variant="body1">Aucune partie disponible</Typography>
+        )}
       </div>
+
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Créer une nouvelle partie</DialogTitle>
         <DialogContent>
@@ -191,9 +207,9 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({
         Créer une partie
       </Button>
       <ConfirmeRound
+        round={selectedRound}
         open={confirmationModalOpen}
         onClose={() => setConfirmationModalOpen(false)}
-        round={selectedRound}
         currentUserId={currentUserId}
       />
     </div>

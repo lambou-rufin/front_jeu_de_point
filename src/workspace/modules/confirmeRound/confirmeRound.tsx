@@ -12,8 +12,6 @@ import {
 import { ConfirmeRoundProps } from "../../../shared/models/interface";
 import RoundService from "../../../shared/service/RoundService";
 
-const roundService = new RoundService();
-
 const ConfirmeRound: React.FC<ConfirmeRoundProps> = ({
   open,
   onClose,
@@ -34,7 +32,7 @@ const ConfirmeRound: React.FC<ConfirmeRoundProps> = ({
       playerId
     ); // Log des IDs
     try {
-      await roundService.confirmPlayer(roundId, playerId);
+      await RoundService.confirmPlayer(roundId, playerId);
       setSnackbarMessage("Confirmation réussie! Vous avez rejoint la partie.");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);

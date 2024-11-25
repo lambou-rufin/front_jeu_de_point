@@ -1,5 +1,5 @@
 // src/components/Footer.tsx
-import React from "react";
+import React, { useState } from "react";
 import { BottomNavigation, BottomNavigationAction } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
@@ -7,7 +7,7 @@ import "./Footer.css";
 import { Logout, RuleSharp } from "@mui/icons-material";
 
 const Footer: React.FC = () => {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
 
   return (
     <footer className="footer">

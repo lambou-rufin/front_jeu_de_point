@@ -1,37 +1,35 @@
 import React, { useState } from "react";
 import { TextField, Button, Typography, Container, Box } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
+import { Formik, Form, Field } from "formik";
+import * as Yup from "yup";
 import routes from "../../../route/public/routes";
-import { SignUpData } from "../../../shared/models/interface";
 import AuthService from "../../../shared/service/AuthService";
 import './Register.css';
 
+const RegisterSchema = Yup.object().shape({
+  phoneNumber: Yup.string().required("Phone number is required"),
+  password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password')], "Passwords must match")
+    .required("Confirm password is required"),
+  pseudo: Yup.string().required("Pseudo is required"),
+});
+
 const Register: React.FC = () => {
-  const [phoneNumber, setPhoneNumber] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const [pseudo, setPseudo] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [error, setError] = useState<string>("");
   const navigate = useNavigate();
+  const [submissionError, setSubmissionError] = useState<string>("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    const signUpData: SignUpData = {
-      phoneNumber,
-      password,
-      pseudo,
-    };
-
+  const handleSubmit = async (values: any, { setSubmitting, resetForm }: any) => {
+    setSubmissionError(""); // Clear any previous errors
     try {
-      await AuthService.signUp(signUpData);
-      // Redirect or update the state as necessary
-      navigate('/login'); // Redirection vers login
+      await AuthService.signUp(values);
+      resetForm();
+      navigate('/login'); // Redirect to login page after successful registration
     } catch (error) {
-      setError((error as Error).message);
+      setSubmissionError((error as Error).message); // Set the submission error
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -42,57 +40,76 @@ const Register: React.FC = () => {
         flexDirection="column"
         justifyContent="center"
         alignItems="center"
-        minHeight="50vh" // Center vertically in full height
+        minHeight="50vh"
         marginTop="15rem"
-        bgcolor="#ffffff" // Optional: Light background color
-        padding={2} // Optional: Padding around the container
-        borderRadius={2} // Optional: Rounded corners
-        boxShadow={3} // Optional: Shadow effect
+        bgcolor="#ffffff"
+        padding={2}
+        borderRadius={2}
+        boxShadow={3}
       >
         <Typography variant="h5">Créer votre compte</Typography>
-        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-          <TextField
-            label="Pseudo"
-            fullWidth
-            margin="normal"
-            value={pseudo}
-            onChange={(e) => setPseudo(e.target.value)}
-            required
-          />
-          <TextField
-            label="Phone Number"
-            fullWidth
-            margin="normal"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            required
-          />
-          <TextField
-            label="Password"
-            type="password"
-            fullWidth
-            margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-           <TextField
-            label="Confirm password"
-            type="password"
-            fullWidth
-            margin="normal"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-          {error && <Typography color="error">{error}</Typography>}
-          <Button type="submit" className="registerButton" fullWidth variant="contained" color="primary">
-            Register
-          </Button>
-          <p>
-            <Link to={routes.LOGIN}>Se connecter</Link>
-          </p>
-        </form>
+        <Formik
+          initialValues={{ phoneNumber: "", password: "", confirmPassword: "", pseudo: "" }}
+          validationSchema={RegisterSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ errors, touched, isSubmitting }) => (
+            <Form style={{ width: "100%" }}>
+              <Field
+                as={TextField}
+                label="Pseudo"
+                name="pseudo"
+                fullWidth
+                margin="normal"
+                error={touched.pseudo && Boolean(errors.pseudo)}
+                helperText={touched.pseudo && errors.pseudo}
+              />
+              <Field
+                as={TextField}
+                label="Phone Number"
+                name="phoneNumber"
+                fullWidth
+                margin="normal"
+                error={touched.phoneNumber && Boolean(errors.phoneNumber)}
+                helperText={touched.phoneNumber && errors.phoneNumber}
+              />
+              <Field
+                as={TextField}
+                label="Password"
+                type="password"
+                name="password"
+                fullWidth
+                margin="normal"
+                error={touched.password && Boolean(errors.password)}
+                helperText={touched.password && errors.password}
+              />
+              <Field
+                as={TextField}
+                label="Confirm Password"
+                type="password"
+                name="confirmPassword"
+                fullWidth
+                margin="normal"
+                error={touched.confirmPassword && Boolean(errors.confirmPassword)}
+                helperText={touched.confirmPassword && errors.confirmPassword}
+              />
+              {submissionError && <Typography color="error">{submissionError}</Typography>}
+              <Button
+                type="submit"
+                className="registerButton"
+                fullWidth
+                variant="contained"
+                color="primary"
+                disabled={isSubmitting}
+              >
+                Register
+              </Button>
+              <p>
+                <Link to={routes.LOGIN}>Se connecter</Link>
+              </p>
+            </Form>
+          )}
+        </Formik>
       </Box>
     </Container>
   );

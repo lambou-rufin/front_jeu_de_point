@@ -6,10 +6,12 @@ import WebSocketComponent from './workspace/modules/WebSocketComponent/WebSocket
 
 function App() {
   useEffect(() => {
-    WebSocketService.createInstanceSocket('ws://localhost:3002'); // Créez et connectez une instance de socket
-  
+    // Créez et connectez le socket
+    WebSocketService.createInstanceSocket("ws://localhost:3002");
+
     return () => {
-      WebSocketService.close(); // Fermez la connexion lors du démontage du composant
+      // Fermez la connexion au socket lors du démontage du composant
+      WebSocketService.closeSocket(); // Utilisez closeSocket au lieu de close
     };
   }, []);
   

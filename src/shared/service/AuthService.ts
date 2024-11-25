@@ -18,16 +18,18 @@ class AuthService {
   // Méthode pour l'inscription
   async signUp(signUpData: SignUpData): Promise<void> {
     try {
-      await api.post("/auth/signup", signUpData); 
+      await api.post("/auth/signup", signUpData);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        throw new Error(
-          error.response.data.message || "Échec de l’inscription"
-        );
+        if (error.response.status === 409) {
+          throw new Error("Le numéro de téléphone est déjà pris.");
+        }
+        throw new Error(error.response.data.message || "Échec de l’inscription");
       }
       throw new Error("Échec de l’inscription");
     }
-  }
+  }  
+    
   // Méthode pour la connexion
   async signIn(signInData: SignInData): Promise<AuthResponse> {
     try {

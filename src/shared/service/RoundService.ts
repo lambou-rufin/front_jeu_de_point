@@ -1,9 +1,16 @@
-// RoundService.ts
-import axios from "axios";
-import api from "../../api/api";
-import { ConfirmPlayerResponse, CreateRoundDto } from "../models/interface";
+import io from 'socket.io-client';
+import { CreateRoundDto } from "../models/interface";
 
+// Classe de gestion des rounds
 class RoundService {
+  private socket;
+  
+  constructor() {
+    // Connecte au serveur WebSocket sur le namespace 'rounds' (assure-toi que ton serveur WebSocket écoute bien sur ce namespace)
+    this.socket = io('http://localhost:3002/rounds'); // L'adresse de ton serveur WebSocket
+  }
+
+  // Méthode pour obtenir le pseudo depuis le token
   public getPseudo() {
     const token = localStorage.getItem("accessToken");
     if (token) {
@@ -11,15 +18,14 @@ class RoundService {
         const payloadBase64 = token.split(".")[1];
         const payloadJson = atob(payloadBase64);
         const data = JSON.parse(payloadJson);
-        const pseudo = data.pseudo;
-
-        return pseudo;
+        return data.pseudo;
       } catch (error) {
         console.log("error");
       }
     }
   }
 
+  // Méthode pour obtenir l'ID utilisateur depuis le token
   public getIdFromToken() {
     const token = localStorage.getItem("accessToken");
     if (token) {
@@ -27,67 +33,50 @@ class RoundService {
         const payloadBase64 = token.split(".")[1];
         const payloadJson = atob(payloadBase64);
         const data = JSON.parse(payloadJson);
-        const userId = data.id;
-
-        return userId;
+        return data.id;
       } catch (error) {
         console.log("error");
       }
     }
   }
 
-  // Méthode pour créer une partie
-  async createRound(createRoundDto: CreateRoundDto): Promise<CreateRoundDto> {
-    try {
-      const response = await api.post("/rounds", createRoundDto);
-      const pseudo = this.getPseudo();
-      console.log(pseudo);
-      return response.data; // Retourne les données de la partie créée
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw new Error(
-          error.response.data.message || "Échec de la création du round"
-        );
+// Méthode pour créer une partie via WebSocket
+async createRound(createRoundDto: CreateRoundDto): Promise<CreateRoundDto | void> {
+  return new Promise((resolve, reject) => {
+    createRoundDto.creatorId = this.getIdFromToken();
+    this.socket.emit('createRound', createRoundDto, (response: any) => {
+      if (response?.event === 'roundCreated') {
+        console.log('Partie créée avec succès', response.data);
+        resolve(response.data);
+      } else {
+        console.error('Erreur lors de la création de la partie', response?.data || response);
+        reject(new Error('Erreur lors de la création de la partie'));
       }
-      throw new Error("Échec de la création du round");
-    }
-  }
+    });
+  });
+}
 
-  // Méthode pour récupérer les parties existantes
-  async getRounds(): Promise<CreateRoundDto[]> {
-    try {
-      const response = await api.get("/findAllRounds");
-      return response.data; // Retourne les données des parties existantes
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw new Error(
-          error.response.data.message || "Échec du chargement des parties"
-        );
-      }
-      throw new Error("Échec du chargement des parties");
-    }
+  // Méthode pour récupérer toutes les parties existantes via WebSocket
+  async getRounds(): Promise<any> {
+    // Demande à obtenir les rounds existants via WebSocket (si nécessaire pour ton cas)
+    this.socket.emit('getRounds', {}, (response: any) => {
+      console.log('Réponse pour les rounds existants:', response);
+      return response.data;
+    });
   }
-  // Méthode pour confirmer la participation d'un joueur à une partie
+  
+  // Méthode pour confirmer un joueur via WebSocket
   async confirmPlayer(roundId: number, playerId: number): Promise<any> {
     const id = this.getIdFromToken();
-    console.log(id);
-    try {
-      console.log(
-        `Confirmer le round avec ID: ${roundId} pour le joueur ID: ${playerId}`
-      ); // Log de vérification
-      const response = await api.post(`/rounds/${roundId}/confirm`, {
-        playerId,
-      });
-      return response.data; // Retourne les données de confirmation
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw new Error(
-          error.response.data.message ||
-            "Échec de la confirmation de la participation"
-        );
+    this.socket.emit('confirmPlayer', { roundId, playerId, userId: id }, (response: any) => {
+      if (response.event === 'playerConfirmed') {
+        console.log('Participation confirmée pour le joueur');
+        return response.data;
+      } else {
+        console.error('Erreur lors de la confirmation du joueur', response.data);
       }
-      throw new Error("Échec de la confirmation de la participation");
-    }
+    });
   }
 }
-export default RoundService;
+
+export default new RoundService();

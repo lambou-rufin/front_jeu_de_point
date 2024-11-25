@@ -16,13 +16,13 @@ import Replay from "../../workspace/modules/Replay/Replay";
 const Router: FC = () => {
   const currentUserId = 1; // Remplacez ceci par la logique pour récupérer l'ID de l'utilisateur connecté
 
-  // Initialiser le socket lors de l'ouverture du composant
   useEffect(() => {
-    WebSocketService.createInstanceSocket("ws://localhost:3002"); // Créez une instance de socket en utilisant la méthode de la classe
-    WebSocketService.connect(); // Connectez le socket
+    // Créez une instance de socket et connectez-le
+    WebSocketService.createInstanceSocket("ws://localhost:3002"); 
 
     return () => {
-      WebSocketService.close(); // Déconnectez le socket lors du démontage du composant
+      // Fermez la connexion au socket lors du démontage du composant
+      WebSocketService.closeSocket(); 
     };
   }, []);
 
