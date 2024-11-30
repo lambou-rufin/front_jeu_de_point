@@ -1,27 +1,24 @@
-// WebSocketService.ts
 import { io, Socket } from 'socket.io-client';
 
+const url = 'http://localhost:3002';
 class WebSocketService {
   private static socket: Socket | null = null;
-
   static createInstanceSocket(url: string, token: string = '') {
-    // console.log(token);
-    
     this.socket = io(url, {
-      transportOptions:{
-        polling:{
+      transportOptions: {
+        polling: {
           extraHeaders: {
             authorization: `Bearer ${token}`,
           },
-        }
-      }
+        },
+      },
     });
 
     this.socket.on('connect', () => {
       console.log('Connected to the Socket.IO server');
     });
 
-    this.socket.on('connect_error', (error) => {
+    this.socket.on('connect_error', (error: any) => {
       console.error('Socket.IO connection error:', error);
     });
 
@@ -41,12 +38,20 @@ class WebSocketService {
     this.socket = null;
   }
 
-  static sendMessage(event: string, message: any) {
-    if (this.socket) {
-      this.socket.emit(event, message);
-    } else {
-      console.error('Socket is not initialized');
-    }
+  static sendMessage<T>(event: string, message: any): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      if (this.socket) {
+        this.socket.emit(event, message, (response: any) => {
+          if (response?.success) {
+            resolve(response.data); // Résoudre avec les données
+          } else {
+            reject(response?.error || new Error('Erreur lors de l\'événement'));
+          }
+        });
+      } else {
+        reject(new Error('Socket is not initialized'));
+      }
+    });
   }
 }
 

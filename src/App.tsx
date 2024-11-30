@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import './App.css';
 import Router from './route/public/Router';
 import WebSocketService from './shared/service/WebSocketService';
-import WebSocketComponent from './workspace/modules/WebSocketComponent/WebSocketComponent';
 
 function App() {
   useEffect(() => {
@@ -17,7 +16,6 @@ function App() {
   
   return (
     <div className="App">
-       <WebSocketComponent />
        <Router/>
        </div>
   );

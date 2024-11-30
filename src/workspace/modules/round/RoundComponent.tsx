@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   TextField,
@@ -10,11 +10,11 @@ import {
   Card,
   CardContent,
 } from "@mui/material";
-import "./Round.css";
 import { CreateRoundDto } from "../../../shared/models/interface";
 import ConfirmeRound from "../confirmeRound/confirmeRound";
 import WebSocketService from "../../../shared/service/WebSocketService";
 import RoundService from "../../../shared/service/RoundService";
+import "./Round.css";
 
 const RoundComponent: React.FC<{ currentUserId: number }> = ({
   currentUserId,
@@ -39,109 +39,108 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({
   );
   const [isCreating, setIsCreating] = useState(false);
 
+  // Initialisation de WebSocket et chargement initial
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    ; // Remplacez par le token réel
-    WebSocketService.createInstanceSocket("http://localhost:3002", token||'');
+    const token = localStorage.getItem("accessToken") || "";
+    WebSocketService.createInstanceSocket("http://localhost:3002", token);
 
-    // Fetch existing rounds
     const fetchRounds = async () => {
       try {
         const roundsData = await RoundService.getRounds();
         setRounds(roundsData);
       } catch (error) {
-        console.error("Erreur lors du chargement des parties:", error);
+        console.error("Erreur lors du chargement des parties :", error);
       }
     };
 
     fetchRounds();
 
-    WebSocketService.getSocket()?.on(
-      "roundCreated",
-      (round: CreateRoundDto) => {
-        console.log("Round reçu via WebSocket:", round);
-        setRounds((prevRounds) =>
-          Array.isArray(prevRounds) ? [...prevRounds, round] : [round]
-        );
-      }
-    );
+    const socket = WebSocketService.getSocket();
 
-    return () => {
-      WebSocketService.closeSocket();
-    };
+    if (socket) {
+      socket.on("roundCreated", (round: CreateRoundDto) => {
+        setRounds((prev) => [...prev, round]);
+      });
+
+      socket.on("roundUpdated", (round: CreateRoundDto) => {
+        setRounds((prev) =>
+          prev.map((r) => (r.id_rond === round.id_rond ? round : r))
+        );
+      });
+    }
+
+    return () => WebSocketService.closeSocket();
   }, []);
 
+  // Gestion des entrées utilisateur pour la création d'une partie
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewRound((prev) => ({ ...prev, [name]: Number(value) }));
   };
 
+  // Création d'une nouvelle partie
   const createRound = async () => {
     if (!isCreating) {
       setIsCreating(true);
       try {
+        newRound.creatorId = currentUserId;
         const createdRound = await RoundService.createRound(newRound);
-        if (createdRound) {
-          setRounds((prevRounds) => [...prevRounds, createdRound]);
-          setOpen(false);
-        }
+        setRounds((prev) => [...prev, createdRound]);
+        setOpen(false);
       } catch (error) {
-        console.error("Erreur lors de la création de la partie:", error);
-        alert("Échec de la création d’une nouvelle partie");
+        console.error("Erreur lors de la création de la partie :", error);
+        alert("Échec de la création d'une nouvelle partie");
       } finally {
         setIsCreating(false);
       }
     }
   };
 
+  // Ouvrir le dialogue de confirmation
   const openConfirmationDialog = (round: CreateRoundDto) => {
     setSelectedRound(round);
     setConfirmationModalOpen(true);
   };
 
+  // Rendu du composant
   return (
     <div className="container">
-      <h1 className="liste">Liste des parties</h1>
+      <Typography variant="h4" className="liste">
+        Liste des parties
+      </Typography>
       <div className="round-list">
-        {rounds && rounds.length > 0 ? (
-          rounds.map((round) =>
-            round ? (
-              <Card
-                key={round.id_rond}
-                className="round-card clickable-card"
-                onClick={() => openConfirmationDialog(round)}
-              >
-                <CardContent className="card-style">
-                  <Typography className="partieId" variant="h6">
-                    Partie {round.id_rond}
-                  </Typography>
-                  <Typography variant="body1">
-                    Taille de la grille: {round.matrix_size}
-                  </Typography>
-                  <Typography variant="body1">
-                    Score maximum: {round.max_score}
-                  </Typography>
-                  <Typography variant="body1">
-                    Temps de réflexion: {round.reflexion_time} secondes
-                  </Typography>
-                  <Typography variant="body1">
-                    Durée limite: {round.duration_time} minutes
-                  </Typography>
-                  <Typography variant="body1">Mise: {round.mise}</Typography>
-                  <Typography variant="body1">
-                    Créateur: Joueur {round.creatorId}
-                  </Typography>
-                </CardContent>
-              </Card>
-            ) : null
-          )
+        {rounds.length > 0 ? (
+          rounds.map((round) => (
+            <Card
+              key={round.id_rond}
+              className="round-card clickable-card"
+              onClick={() => openConfirmationDialog(round)}
+            >
+              <CardContent className="card-style">
+                <Typography variant="h6">Partie #{round.id_rond}</Typography>
+                <Typography>
+                  Taille de la grille : {round.matrix_size}
+                </Typography>
+                <Typography>Score maximum : {round.max_score}</Typography>
+                <Typography>
+                  Temps de réflexion : {round.reflexion_time} secondes
+                </Typography>
+                <Typography>
+                  Durée limite : {round.duration_time} minutes
+                </Typography>
+                <Typography>Mise : {round.mise}</Typography>
+                <Typography>Créateur : Joueur {round.creatorId}</Typography>
+              </CardContent>
+            </Card>
+          ))
         ) : (
-          <Typography variant="body1">Aucune partie disponible</Typography>
+          <Typography>Aucune partie disponible</Typography>
         )}
       </div>
 
+      {/* Dialogue pour créer une partie */}
       <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>Créer une nouvelle partie</DialogTitle>
+        <DialogTitle className="title">Créer une nouvelle partie</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
@@ -191,27 +190,42 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)} color="primary">
+          <Button
+            variant="contained"
+            className="annuleee"
+            onClick={() => setOpen(false)}
+          >
             Annuler
           </Button>
-          <Button onClick={createRound} color="primary">
+          <Button
+            variant="contained"
+            className="creee"
+            onClick={createRound}
+            //  disabled={isCreating}
+          >
             Créer
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Bouton pour ouvrir le dialogue */}
       <Button
-        className="createRound"
         variant="contained"
+        className="createRound"
         onClick={() => setOpen(true)}
       >
         Créer une partie
       </Button>
-      <ConfirmeRound
-        round={selectedRound}
-        open={confirmationModalOpen}
-        onClose={() => setConfirmationModalOpen(false)}
-        currentUserId={currentUserId}
-      />
+
+      {/* Composant de confirmation */}
+      {selectedRound && (
+        <ConfirmeRound
+          round={selectedRound}
+          open={confirmationModalOpen}
+          onClose={() => setConfirmationModalOpen(false)}
+          currentUserId={currentUserId}
+        />
+      )}
     </div>
   );
 };

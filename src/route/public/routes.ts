@@ -5,7 +5,7 @@ const routes = {
   GAME: "/game",
   HISTORIQUE: "/historique",
   REPLAY: "/replay",
-  FORGOTPASSWORD: "/login/forgotPassword",
+  FORGOTPASSWORD: "/forgotPassword",
   REGISTER: "/register",
   DASHBOARD: "/dashboard",
   PROFILE: "/profile",

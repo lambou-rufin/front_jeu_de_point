@@ -5,10 +5,11 @@ import { Button } from '@mui/material';
 
 const GameComponent: React.FC = () => {
   useEffect(() => {
-    WebSocketService.createInstanceSocket('ws://localhost:3002'); // Create and connect a socket instance
+    const token = localStorage.getItem("accessToken") || "";
+    WebSocketService.createInstanceSocket("http://localhost:3002", token); // Create and connect a socket instance
 
     return () => {
-      WebSocketService.closeSocket(); // Close the socket connection on component unmount
+      // WebSocketService.closeSocket(); // Close the socket connection on component unmount
     };
   }, []);
 

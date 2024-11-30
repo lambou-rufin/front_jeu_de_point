@@ -24,60 +24,41 @@ const ConfirmeRound: React.FC<ConfirmeRoundProps> = ({
     "success"
   );
 
-  const confirmRound = async (roundId: number, playerId: number) => {
-    console.log(
-      "Tentative de confirmation de la partie avec ID:",
-      roundId,
-      "et Player ID:",
-      playerId
-    ); // Log des IDs
+  const confirmRound = async () => {
+    if (!round) return;
     try {
-      await RoundService.confirmPlayer(roundId, playerId);
+      await RoundService.confirmPlayer(round.id_rond);
       setSnackbarMessage("Confirmation réussie! Vous avez rejoint la partie.");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
       onClose();
     } catch (error) {
-      console.error("Erreur de confirmation:", error);
+      console.error("Erreur lors de la confirmation de la partie:", error);
       setSnackbarMessage("Impossible d'accepter cette invitation.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
   };
 
-  const refuseRound = () => {
-    // alert("Vous avez refusé la participation à la partie.");
-    onClose(); // Ferme le dialogue
-  };
+  const handleSnackbarClose = () => setSnackbarOpen(false);
 
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
-
-  if (!round) return null; // Ne rien afficher si aucune round n'est sélectionnée
+  if (!round) return null; // Ne rien afficher si aucune partie sélectionnée
 
   return (
     <>
       <Dialog open={open} onClose={onClose}>
         <DialogTitle>Confirmer l'invitation</DialogTitle>
         <DialogContent>
-          <Typography variant="body1">Partie {round.id_rond}</Typography>
-          <Typography variant="body1">
-            Taille de la grille: {round.matrix_size}
-          </Typography>
-          <Typography variant="body1">
-            Score maximum: {round.max_score}
-          </Typography>
+          <Typography variant="body1">Partie #{round.id_rond}</Typography>
+          <Typography variant="body1">Taille de la grille: {round.matrix_size}</Typography>
+          <Typography variant="body1">Score maximum: {round.max_score}</Typography>
           <Typography variant="body1">Mise: {round.mise}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={() => confirmRound(round.id_rond, currentUserId)}
-            color="primary"
-          >
+          <Button onClick={confirmRound} color="primary">
             Accepter
           </Button>
-          <Button onClick={refuseRound} color="error">
+          <Button onClick={onClose} color="error">
             Refuser
           </Button>
         </DialogActions>
@@ -89,11 +70,7 @@ const ConfirmeRound: React.FC<ConfirmeRoundProps> = ({
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity={snackbarSeverity}
-          sx={{ width: "75%" }}
-        >
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: "100%" }}>
           {snackbarMessage}
         </Alert>
       </Snackbar>

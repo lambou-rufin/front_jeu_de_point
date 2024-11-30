@@ -8,23 +8,25 @@ import RoundComponent from "../../workspace/modules/round/RoundComponent";
 import Setting from "../../workspace/modules/Setting/Setting";
 import Home from "../../workspace/modules/home/Home";
 import About from "../../workspace/modules/about/About";
-import WebSocketService from "../../shared/service/WebSocketService";
+// import WebSocketService from "../../shared/service/WebSocketService";
 import GameComponent from "../../workspace/modules/game/GameComponent";
 import Historique from "../../workspace/modules/Historique/Historique";
 import Replay from "../../workspace/modules/Replay/Replay";
+import Logout from "../../workspace/modules/users/LogOut";
+import { ForgotPassword } from "../../workspace/modules/ForgotPassword/ForgotPassword";
 
 const Router: FC = () => {
   const currentUserId = 1; // Remplacez ceci par la logique pour récupérer l'ID de l'utilisateur connecté
 
-  useEffect(() => {
-    // Créez une instance de socket et connectez-le
-    WebSocketService.createInstanceSocket("ws://localhost:3002"); 
+  // useEffect(() => {
+  //   // Créez une instance de socket et connectez-le
+  //   WebSocketService.createInstanceSocket("ws://localhost:3002"); 
 
-    return () => {
-      // Fermez la connexion au socket lors du démontage du composant
-      WebSocketService.closeSocket(); 
-    };
-  }, []);
+  //   return () => {
+  //     // Fermez la connexion au socket lors du démontage du composant
+  //     WebSocketService.closeSocket(); 
+  //   };
+  // }, []);
 
   return (
     <BrowserRouter>
@@ -33,7 +35,7 @@ const Router: FC = () => {
         <Route path={routes.LOGIN} element={<Login />} />
         <Route path={routes.REGISTER} element={<Register />} />
         <Route path={routes.GAME} element={<GameComponent />} />
-        {/* <Route path={routes.FORGOTPASSWORD} element={<ForgotPassword />} /> */}
+        <Route path={routes.FORGOTPASSWORD} element={<ForgotPassword />} />
 
         {/* Routes avec Layout */}
         <Route element={<Layout />}>
@@ -46,7 +48,7 @@ const Router: FC = () => {
           <Route path={routes.HISTORIQUE} element={<Historique />} />
           <Route path={routes.REPLAY} element={<Replay />} />
           <Route path={routes.ABOUT} element={<About />} />
-          {/* <Route path={routes.LOGOUT} element={<Logout />} /> */}
+          <Route path={routes.LOGOUT} element={<Logout />} />
         </Route>
 
         {/* Redirection par défaut */}
