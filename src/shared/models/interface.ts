@@ -55,3 +55,13 @@ export interface ConfirmPlayerResponse {
   message: string;
   round: any; // Remplacez `any` par le type approprié de votre round
 }
+
+export interface ModalProps {
+  open: boolean;
+  title: string;
+  message: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  confirmText?: string;
+  cancelText?: string;
+}

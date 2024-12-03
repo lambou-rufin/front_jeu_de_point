@@ -1,15 +1,7 @@
 import React from 'react';
 import { Modal, Box, Typography, Button } from '@mui/material';
+import { ModalProps } from '../models/interface';
 
-interface ModalProps {
-  open: boolean;
-  title: string;
-  message: string;
-  onConfirm: () => void;
-  onCancel: () => void;
-  confirmText?: string;
-  cancelText?: string;
-}
 
 const ModalComponent: React.FC<ModalProps> = ({
   open,
@@ -28,7 +20,7 @@ const ModalComponent: React.FC<ModalProps> = ({
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: 400,
+          // width: 400,
           bgcolor: 'background.paper',
           boxShadow: 24,
           p: 4,
@@ -43,7 +35,7 @@ const ModalComponent: React.FC<ModalProps> = ({
           <Button variant="outlined" onClick={onCancel} color="error">
             {cancelText}
           </Button>
-          <Button variant="contained" onClick={onConfirm} color="primary">
+          <Button variant="outlined" onClick={onConfirm} color="primary">
             {confirmText}
           </Button>
         </Box>

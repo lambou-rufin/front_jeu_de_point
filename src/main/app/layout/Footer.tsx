@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
           href="/about"
         />
         <BottomNavigationAction
-          label="Logout"
+          label="Quitter"
           icon={<LogoutIcon />}
           onClick={() => setModalOpen(true)} // Ouvrir le modal de confirmation
         />

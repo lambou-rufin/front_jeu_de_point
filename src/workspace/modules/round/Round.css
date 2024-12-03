@@ -3,10 +3,12 @@
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  max-height: 80vh; /* Limite la hauteur pour permettre le défilement */
-  overflow-y: auto; /* Ajoute un défilement vertical si nécessaire */
+  max-height: 80vh; 
+  /* Limite la hauteur pour permettre le défilement */
+  overflow-y: hidden; /* Ajoute un défilement vertical si nécessaire */
   padding: 20px;
-  background-color: #1f2937; /* Couleur de fond sombre et moderne */
+  /* background-color: #1f2937; */
+   /* Couleur de fond sombre et moderne */
   max-width: 700px;
   margin: auto;
   border-radius: 10px;
@@ -19,7 +21,8 @@
   max-width: 800px;
   overflow: hidden;
   padding: 15px 20px;
-  background-color: #374151; /* Couleur de fond moderne */
+  /* background-color: #374151;  */
+  /* Couleur de fond moderne */
   display: flex;
   border-radius: 10px;
   flex-direction: row;
@@ -32,12 +35,26 @@
 }
 
 .liste{
-font-size: 10px;
+font-size: 17px;
+margin-bottom: 1rem;
+text-decoration: underline;
+}
+
+.idRound{
+  background-color: #d82e2e;
+  border-radius: 5px;
+}
+
+.idPlayer{
+background-color: rgb(84, 133, 35);
+border-radius: 5px;
 }
 
 .round-card:hover {
-  transform: scale(1.02); /* Légère mise en évidence au survol */
-  background-color: #4b5563; /* Couleur de fond au survol */
+  /* transform: scale(1.02);  */
+  /* Légère mise en évidence au survol */
+  /* background-color: #4b5563; */
+   /* Couleur de fond au survol */
 }
 
 .card-style {
