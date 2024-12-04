@@ -16,7 +16,10 @@ interface AddRoundProps {
   onRoundCreated: (newRound: CreateRoundDto) => void;
 }
 
-const AddRoundComponent: FC<AddRoundProps> = ({ currentUserId, onRoundCreated }) => {
+const AddRoundComponent: FC<AddRoundProps> = ({
+  currentUserId,
+  onRoundCreated,
+}) => {
   const [open, setOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [newRound, setNewRound] = useState<CreateRoundDto>({
@@ -121,11 +124,7 @@ const AddRoundComponent: FC<AddRoundProps> = ({ currentUserId, onRoundCreated })
           >
             Annuler
           </Button>
-          <Button
-            variant="contained"
-            className="creee"
-            onClick={createRound}
-          >
+          <Button variant="contained" className="creee" onClick={createRound}>
             Créer
           </Button>
         </DialogActions>

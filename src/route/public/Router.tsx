@@ -20,11 +20,11 @@ const Router: FC = () => {
 
   // useEffect(() => {
   //   // Créez une instance de socket et connectez-le
-  //   WebSocketService.createInstanceSocket("ws://localhost:3002"); 
+  //   WebSocketService.createInstanceSocket("ws://localhost:3002");
 
   //   return () => {
   //     // Fermez la connexion au socket lors du démontage du composant
-  //     WebSocketService.closeSocket(); 
+  //     WebSocketService.closeSocket();
   //   };
   // }, []);
 
@@ -34,7 +34,6 @@ const Router: FC = () => {
         {/* Routes sans Layout */}
         <Route path={routes.LOGIN} element={<Login />} />
         <Route path={routes.REGISTER} element={<Register />} />
-        <Route path={routes.GAME} element={<GameComponent />} />
         <Route path={routes.FORGOTPASSWORD} element={<ForgotPassword />} />
 
         {/* Routes avec Layout */}
@@ -44,7 +43,8 @@ const Router: FC = () => {
             path={routes.ROUND}
             element={<RoundComponent currentUserId={currentUserId} />}
           />
-           <Route path={routes.SETTINGS} element={<Setting />} />
+          <Route path={routes.GAME} element={<GameComponent />} />
+          <Route path={routes.SETTINGS} element={<Setting />} />
           <Route path={routes.HISTORIQUE} element={<Historique />} />
           <Route path={routes.REPLAY} element={<Replay />} />
           <Route path={routes.ABOUT} element={<About />} />

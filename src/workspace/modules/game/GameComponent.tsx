@@ -18,13 +18,15 @@ const GameComponent: React.FC = () => {
   };
 
   return (
+    <>
     <div>
       <h1>Game Component</h1>
       <Button variant="contained" onClick={sendMessage} color="primary">
         Send Message
       </Button>
-      <Footer />
+      {/* <Footer /> */}
     </div>
+    </>
   );
 };
 
