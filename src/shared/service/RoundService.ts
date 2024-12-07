@@ -1,4 +1,4 @@
-import { CreateRoundDto } from "../models/interface";
+import { ConfirmPlayerResponse, CreateRoundDto } from "../models/interface";
 import WebSocketService from "./WebSocketService";
 
 class RoundService {
@@ -26,14 +26,65 @@ class RoundService {
   /**
    * Confirme un joueur dans un round
    */
-  async confirmPlayer(roundId: number): Promise<any> {
-    const playerId = this.getPlayerIdFromToken();
-    if (!playerId) {
-      throw new Error("Impossible de récupérer l'ID du joueur depuis le token.");
-    }
+  // async confirmPlayer(roundId: number): Promise<any> {
+  //   const playerId = this.getPlayerIdFromToken();
+  //   if (!playerId) {
+  //     throw new Error("Impossible de récupérer l'ID du joueur depuis le token.");
+  //   }
 
-    return WebSocketService.sendMessage("confirmPlayer", { roundId, playerId });
+  //   return WebSocketService.sendMessage("confirmPlayer", { roundId, playerId });
+  // }
+
+  async confirmPlayer(roundId: number): Promise<ConfirmPlayerResponse> {
+    try {
+      // Récupérer l'ID du joueur depuis le token
+      const playerId = this.getPlayerIdFromToken();
+      if (!playerId) {
+        throw new Error("Impossible de récupérer l'ID du joueur depuis le token.");
+      }
+  
+      // Envoyer un message via WebSocket
+      const response: ConfirmPlayerResponse = await WebSocketService.sendMessage(
+        "confirmPlayer",
+        { roundId, playerId }
+      );
+  
+      // Vérifier la réponse pour des erreurs spécifiques
+      if (!response || response.error) {
+        throw new Error(response.error || "Une erreur est survenue lors de la confirmation.");
+      }
+  
+      return response; // Renvoie les données si la confirmation réussit
+    } catch (error: any) {
+      // Gestion des erreurs spécifiques envoyées par le backend
+      const errorMessage = error.message;
+  
+      if (errorMessage.includes("Partie non trouvée")) {
+        console.error("Erreur : Partie non trouvée.");
+        throw new Error("La partie demandée est introuvable.");
+      }
+  
+      if (errorMessage.includes("Ce round a déjà un deuxième joueur")) {
+        console.error("Erreur : Round déjà complet.");
+        throw new Error("Ce round a déjà un deuxième joueur.");
+      }
+  
+      if (errorMessage.includes("Solde insuffisant")) {
+        console.error("Erreur : Solde insuffisant.");
+        throw new Error("Vous ou le créateur de la partie n'avez pas un solde suffisant pour participer.");
+      }
+  
+      if (errorMessage.includes("Le créateur et le second joueur doivent être différents")) {
+        console.error("Erreur : Joueur déjà inscrit.");
+        throw new Error("Vous ne pouvez pas rejoindre votre propre partie.");
+      }
+  
+      // Gestion des erreurs générales ou inattendues
+      console.error("Erreur inattendue :", errorMessage);
+      throw new Error("Une erreur inattendue est survenue. Veuillez réessayer.");
+    }
   }
+  
 
   /**
    * Écoute les événements pour les rounds créés

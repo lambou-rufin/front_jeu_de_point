@@ -65,3 +65,20 @@ export interface ModalProps {
   confirmText?: string;
   cancelText?: string;
 }
+
+export interface Player {
+  pseudo: string;
+}
+
+export interface ConfirmPlayerResponse {
+  error?: string; // Facultatif
+  message: string; // Message de réponse
+  roundDetails: {  // Renommer round en roundDetails
+    id_rond: number;
+    matrix_size: number;
+    mise: number;
+    player_one: Player;
+    player_two: Player;
+  };
+}
+

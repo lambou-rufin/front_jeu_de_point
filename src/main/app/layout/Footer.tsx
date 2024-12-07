@@ -28,7 +28,11 @@ const Footer: React.FC = () => {
         }}
         className="bottom-navigation"
       >
-        <BottomNavigationAction label="Home" icon={<HomeIcon />} href="/round" />
+        <BottomNavigationAction
+          label="Home"
+          icon={<HomeIcon />}
+          href="/round"
+        />
         <BottomNavigationAction
           label="Reglèment"
           icon={<RuleSharp />}
@@ -38,6 +42,15 @@ const Footer: React.FC = () => {
           label="Quitter"
           icon={<LogoutIcon />}
           onClick={() => setModalOpen(true)} // Ouvrir le modal de confirmation
+          sx={{
+            color: "red", // Texte et icône en rouge
+            "&.Mui-selected": {
+              color: "darkred", // Couleur différente si sélectionné
+            },
+            '&:hover': {
+              color: 'lightred',
+            },          
+          }}
         />
       </BottomNavigation>
 

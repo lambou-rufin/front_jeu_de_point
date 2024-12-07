@@ -1,0 +1,16 @@
+.playerVS {
+    width: 100px; /* Ajuste la largeur */
+    height: 100px; /* Ajuste la hauteur */
+    border-radius: 50%; /* Garde la forme circulaire */
+    background-color: #2563eb;
+    color: black;
+    font-size: 20px; /* Taille du texte */
+}
+
+
+/* .title{
+    background-color: #2563eb;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+  } */

@@ -123,6 +123,10 @@ button.creee{
   display: flex;
 }
 
+.texte{
+  color: black;
+}
+
 /* Réactivité pour écrans plus petits */
 @media (max-width: 768px) {
   .round-list {

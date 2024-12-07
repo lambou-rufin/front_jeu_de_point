@@ -42,6 +42,7 @@ class AuthService {
       throw new Error("Échec de la connexion");
     }
   }
+  
  async clearToken(): Promise<void> {
     return new Promise((resolve) => {
       localStorage.removeItem('accessToken'); // Supprimer l'accessToken du localStorage

@@ -6,7 +6,7 @@ import WebSocketService from "../../../shared/service/WebSocketService";
 import RoundService from "../../../shared/service/RoundService";
 import "./Round.css";
 import AddRoundComponent from "./AddRoundComponent";
-import MatchModal from "../../../shared/components/MatchModal";
+import MatchModal from "../../../shared/components/modal/MatchModal";
 import { useNavigate } from "react-router-dom";
 
 const RoundComponent: React.FC<{ currentUserId: number }> = ({
@@ -161,7 +161,7 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({
               </Card>
             ))
         ) : (
-          <Typography>Aucune partie disponible</Typography>
+          <Typography className="texte">Aucune partie disponible</Typography>
         )}
       </div>
 

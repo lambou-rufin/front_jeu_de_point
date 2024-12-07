@@ -22,16 +22,20 @@ const CustomSnackbar: React.FC<CustomSnackbarProps> = ({ message, severity = "su
 
   return (
     <MuiSnackbar
-      open={open}
-      autoHideDuration={5000}
-      onClose={handleClose}
-      anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      {...props}
-    >
-      <Alert onClose={handleClose} severity={severity} sx={{ width: "100%" }}>
-        {message}
-      </Alert>
-    </MuiSnackbar>
+    open={open}
+    autoHideDuration={5000}
+    onClose={handleClose}
+    anchorOrigin={{ vertical: "top", horizontal: "center" }}
+    sx={{
+      visibility: open ? "visible" : "hidden",  // Utiliser cette règle pour contrôler la visibilité
+      opacity: open ? 1 : 0,  // Assurez-vous que l'opacité est ajustée pour que le Snackbar soit totalement visible
+    }}
+    {...props}
+  >
+    <Alert onClose={handleClose} severity={severity} sx={{ width: "100%" }}>
+      {message}
+    </Alert>
+  </MuiSnackbar>  
   );
 };
 

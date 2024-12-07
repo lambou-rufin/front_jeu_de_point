@@ -24,7 +24,7 @@ const AddRoundComponent: FC<AddRoundProps> = ({
   const [isCreating, setIsCreating] = useState(false);
   const [newRound, setNewRound] = useState<CreateRoundDto>({
     id_rond: 0,
-    matrix_size: 30,
+    matrix_size: 40,
     max_score: 15,
     reflexion_time: 20,
     duration_time: 25,
