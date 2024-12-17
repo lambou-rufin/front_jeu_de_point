@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Typography, Card, CardContent } from "@mui/material";
-import { CreateRoundDto } from "../../../shared/models/interface";
+import { IRoundGame } from "../../../shared/models/interface";
 import ConfirmeRound from "../confirmeRound/confirmeRound";
 import WebSocketService from "../../../shared/service/WebSocketService";
 import RoundService from "../../../shared/service/RoundService";
@@ -12,8 +12,8 @@ import { useNavigate } from "react-router-dom";
 const RoundComponent: React.FC<{ currentUserId: number }> = ({
   currentUserId,
 }) => {
-  const [rounds, setRounds] = useState<CreateRoundDto[]>([]);
-  const [selectedRound, setSelectedRound] = useState<CreateRoundDto | null>(
+  const [rounds, setRounds] = useState<IRoundGame[]>([]);
+  const [selectedRound, setSelectedRound] = useState<IRoundGame | null>(
     null
   );
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
@@ -22,6 +22,11 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({
   const [playerTwoName, setPlayerTwoName] = useState("");
   const navigate = useNavigate();
   console.log(rounds);
+
+  /**
+ * LIFECYCLE
+ */
+
   useEffect(() => {
     const token = localStorage.getItem("accessToken") || "";
     WebSocketService.createInstanceSocket("http://localhost:3002", token);
@@ -39,11 +44,11 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({
 
     const socket = WebSocketService.getSocket();
     if (socket) {
-      socket.on("roundCreated", (round: CreateRoundDto) => {
+      socket.on("roundCreated", (round: IRoundGame) => {
         setRounds((prev) => [...prev, round]);
       });
 
-      socket.on("roundUpdated", (round: CreateRoundDto) => {
+      socket.on("roundUpdated", (round: IRoundGame) => {
         setRounds((prev) =>
           prev.map((r) => (r.id_rond === round.id_rond ? round : r))
         );
@@ -66,12 +71,16 @@ const RoundComponent: React.FC<{ currentUserId: number }> = ({
     return () => WebSocketService.closeSocket();
   }, []);
 
-  const openConfirmationDialog = (round: CreateRoundDto) => {
+  /**
+ * FONCTION
+ */
+
+  const openConfirmationDialog = (round: IRoundGame) => {
     setSelectedRound(round);
     setConfirmationModalOpen(true);
   };
 
-  const handleRoundCreated = (newRound: CreateRoundDto) => {
+  const handleRoundCreated = (newRound: IRoundGame) => {
     setRounds((prev) => [...prev, newRound]);
   };
 

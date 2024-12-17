@@ -27,6 +27,10 @@ const MatchModal: FC<MatchModalProps> = ({
 }) => {
   const navigate = useNavigate();
 
+/**
+ * LIFECYCLE
+ */
+
   useEffect(() => {
     // Si la modale est ouverte, mettre en place un délai de 5 secondes pour fermer la modale et rediriger
     if (open) {
@@ -44,13 +48,13 @@ const MatchModal: FC<MatchModalProps> = ({
     <Dialog open={open} onClose={onClose}>
      <Box
         sx={{
-          top: '50%',
-          left: '50%',
-          p: 4,
-          borderRadius: 2,
+          // top: '50%',
+          // left: '50%',
+          // p: 4,
+          // borderRadius: 2,
         }}
       >
-        <DialogTitle>Match en cours</DialogTitle>
+        <DialogTitle className="title">Match en cours</DialogTitle>
         <DialogContent>
           <Typography variant="h6">
             {playerOneName} <span className="playerVS">vs</span> {playerTwoName}

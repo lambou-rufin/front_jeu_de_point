@@ -1,77 +1,112 @@
-import React, { useEffect, useState } from 'react';
-import WebSocketService from '../../../shared/service/WebSocketService';
-import { Card, CardContent, Typography, Grid, Button, Box } from '@mui/material';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import RoundService from "../../../shared/service/RoundService";
+import WebSocketService from "../../../shared/service/WebSocketService";
 
-interface Round {
-  id_rond: number;
-  matrix: number[][]; // Matrice sous forme de tableau 2D
-  matrix_size: number;
-  creatorId: number;
-  duration_time: number;
-  max_score: number;
-  mise: number;
-  reflexion_time: number;
-  is_confirmed: boolean;
-  is_game_over: boolean;
+interface IRoundGame {
+  matrix: number[][];
+  [key: string]: any; // Ajoute d'autres propriétés si nécessaire
 }
 
 const GameComponent: React.FC = () => {
-  const [round, setRound] = useState<Round | null>(null);
+  const { roundId } = useParams<{ roundId: string }>();
+  const [matrix, setMatrix] = useState<number[][]>([]);
+  const [round, setRound] = useState<IRoundGame | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+/**
+ * LIFECYCLE
+ */
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken') || '';
-    WebSocketService.createInstanceSocket('http://localhost:3002', token);
+    // Gestion WebSocket
+    const token = localStorage.getItem("accessToken") || "";
+    WebSocketService.createInstanceSocket("http://localhost:3002", token);
 
-    // Écoute l'événement 'roundUpdate' pour mettre à jour la matrice
-    WebSocketService.listen('roundUpdate', (data: Round) => {
-      setRound(data);
+    WebSocketService.listen("roundUpdate", (data: IRoundGame) => {
+      console.log("Données reçues via WebSocket:", data);
+      if (data && Array.isArray(data.matrix)) {
+        setRound(data);
+        setMatrix(data.matrix); // Mettre à jour la matrice si elle est dans les données reçues
+      } else {
+        console.error("Données invalides reçues:", data);
+      }
     });
 
+    // Nettoyage lors de la destruction du composant
     return () => {
-      WebSocketService.closeSocket(); // Ferme la connexion WebSocket lors de la fermeture du composant
+      WebSocketService.closeSocket();
     };
   }, []);
 
-  // Fonction pour rendre la matrice sous forme de cartes
-  const renderMatrix = (matrix: number[][]) => {
-    return matrix.map((row, rowIndex) => (
-      <Grid container key={rowIndex} spacing={1} justifyContent="center">
-        {row.map((cell, cellIndex) => (
-          <Grid item key={cellIndex}>
-            <Card sx={{ width: '50px', height: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <CardContent sx={{ padding: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                  {cell}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    ));
+  useEffect(() => {
+    if (!roundId) {
+      setError("Identifiant du round manquant.");
+      return;
+    }
+
+    const fetchMatrix = async () => {
+      try {
+        const initialMatrix = await RoundService.getMatrix(parseInt(roundId, 10));
+        setMatrix(initialMatrix);
+      } catch (err: any) {
+        console.error("Erreur lors du chargement de la matrice :", err.message);
+        setError("Impossible de charger la matrice.");
+      }
+    };
+
+    fetchMatrix();
+
+    // Écouter les mises à jour spécifiques au round via WebSocket
+    RoundService.listenToMatrix(parseInt(roundId, 10), (updatedMatrix: number[][]) => {
+      setMatrix(updatedMatrix);
+    });
+
+    // Nettoyage des écouteurs à la destruction du composant
+    return () => {
+      const socket = WebSocketService.getSocket();
+      if (socket) {
+        socket.off(`matrixUpdate_${roundId}`);
+      }
+    };
+  }, [roundId]);
+
+  const renderMatrix = () => {
+    if (!matrix.length) return <p>Chargement...</p>;
+
+    return (
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${matrix[0].length}, 1fr)` }}>
+        {matrix.map((row, rowIndex) =>
+          row.map((cell, colIndex) => (
+            <div
+              key={`${rowIndex}-${colIndex}`}
+              style={{
+                width: 50,
+                height: 50,
+                border: "1px solid #ddd",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: cell ? "#4caf50" : "#fff",
+              }}
+            >
+              {cell}
+            </div>
+          ))
+        )}
+      </div>
+    );
   };
 
+  if (!roundId) {
+    return <p>Round ID introuvable.</p>;
+  }
+
   return (
-    <Box>
-      <Typography variant="h4" component="h1">Game Component</Typography>
-      <Button variant="contained" color="primary" sx={{ marginBottom: '20px' }}>
-        Send Message
-      </Button>
-
-      {round && (
-        <Box>
-          <Typography variant="h6">Round {round.id_rond}</Typography>
-          <Typography variant="body1">Matrix Size: {round.matrix_size}</Typography>
-
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <Typography variant="h6">Matrix:</Typography>
-              {renderMatrix(round.matrix)} {/* Affiche la matrice */}
-            </Grid>
-          </Grid>
-        </Box>
-      )}
-    </Box>
+    <div>
+      <h3>Matrice du Round</h3>
+      {error ? <p style={{ color: "red" }}>{error}</p> : renderMatrix()}
+    </div>
   );
 };
 

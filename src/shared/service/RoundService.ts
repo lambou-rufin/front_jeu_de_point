@@ -1,17 +1,17 @@
-import { ConfirmPlayerResponse, CreateRoundDto } from "../models/interface";
+import { ConfirmPlayerResponse, IRoundGame } from "../models/interface";
 import WebSocketService from "./WebSocketService";
 
 class RoundService {
   /**
    * Crée un nouveau round
    */
-  async createRound(createRoundDto: CreateRoundDto): Promise<any> {
+  async createRound(iRoundGame: IRoundGame): Promise<any> {
     const playerId = this.getPlayerIdFromToken();
     if (!playerId) {
       throw new Error("Impossible de récupérer l'ID du joueur depuis le token.");
     }
 
-    const payload = { ...createRoundDto, playerId };
+    const payload = { ...iRoundGame, playerId };
     return WebSocketService.sendMessage("createRound", payload);
   }
 
@@ -130,6 +130,29 @@ class RoundService {
     const data = this.decodeToken();
     return data?.playerId;
   }
+
+/**
+ * Écoute les événements pour récupérer la matrice d'un round
+ */
+listenToMatrix(roundId: number, callback: (matrix: number[][]) => void): void {
+  const socket = WebSocketService.getSocket();
+  if (!socket) {
+    console.error("Le socket WebSocket n'est pas initialisé.");
+    return;
+  }
+
+  // Écouter l'événement de mise à jour de la matrice
+  socket.on(`matrixUpdate_${roundId}`, callback);
 }
+
+/**
+ * Récupère la matrice initiale d'un round
+ */
+async getMatrix(roundId: number): Promise<number[][]> {
+  return WebSocketService.sendMessage("getMatrix", { roundId });
+}
+
+}
+
 
 export default new RoundService();

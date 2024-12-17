@@ -7,6 +7,7 @@ const routes = {
   REPLAY: "/replay",
   FORGOTPASSWORD: "/forgotPassword",
   REGISTER: "/register",
+  FEUILLE: "/feuille",
   DASHBOARD: "/dashboard",
   PROFILE: "/profile",
   SETTINGS: "/settings",

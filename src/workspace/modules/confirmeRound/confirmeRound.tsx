@@ -15,6 +15,10 @@ import MatchModal from "../../../shared/components/modal/MatchModal";
 import WebSocketService from "../../../shared/service/WebSocketService";
 import CustomSnackbar from "../../../shared/components/Snackbar/Snackbar";  // Importer le composant CustomSnackbar
 
+/**
+ * VARIABLES
+ */
+
 const ConfirmeRound: React.FC<ConfirmeRoundProps> = ({ open, onClose, round }) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>("");
@@ -78,6 +82,10 @@ const ConfirmeRound: React.FC<ConfirmeRoundProps> = ({ open, onClose, round }) =
   //   }
   // };
   
+/**
+ * FONCTION
+ */
+
   const confirmRound = async () => {
     if (!round) return;
   

@@ -5,6 +5,10 @@ import AuthService from '../../../shared/service/AuthService';
 const Logout: React.FC = () => {
   const navigate = useNavigate();
 
+  /**
+ * LIFECYCLE
+ */
+
   useEffect(() => {
     const response = async () => {
       try {

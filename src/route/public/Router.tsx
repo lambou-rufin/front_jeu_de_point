@@ -14,6 +14,7 @@ import Historique from "../../workspace/modules/Historique/Historique";
 import Replay from "../../workspace/modules/Replay/Replay";
 import Logout from "../../workspace/modules/users/LogOut";
 import { ForgotPassword } from "../../workspace/modules/ForgotPassword/ForgotPassword";
+import Feuille from "../../workspace/modules/game/Feuille";
 
 const Router: FC = () => {
   const currentUserId = 1; // Remplacez ceci par la logique pour récupérer l'ID de l'utilisateur connecté
@@ -44,6 +45,7 @@ const Router: FC = () => {
             element={<RoundComponent currentUserId={currentUserId} />}
           />
           <Route path={routes.GAME} element={<GameComponent />} />
+          {/* <Route path={routes.FEUILLE} element={<Feuille />} /> */}
           <Route path={routes.SETTINGS} element={<Setting />} />
           <Route path={routes.HISTORIQUE} element={<Historique />} />
           <Route path={routes.REPLAY} element={<Replay />} />
